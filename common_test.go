@@ -1,5 +1,6 @@
 // Copyright 2014 Martini Authors
 // Copyright 2014 The Macaron Authors
+// Copyright 2020 the Emmanuel developers
 //
 // Licensed under the Apache License, Version 2.0 (the "License"): you may
 // not use this file except in compliance with the License. You may obtain
@@ -18,7 +19,7 @@ package binding
 import (
 	"mime/multipart"
 
-	"gopkg.in/macaron.v1"
+	"github.com/go-emmanuel/emmanuel"
 )
 
 // These types are mostly contrived examples, but they're used
@@ -88,7 +89,7 @@ type (
 	}
 
 	// The common function signature of the handlers going under test.
-	handlerFunc func(interface{}, ...interface{}) macaron.Handler
+	handlerFunc func(interface{}, ...interface{}) emmanuel.Handler
 
 	// Used for testing mapping an interface to the context
 	// If used (withInterface = true in the testCases), a modeler
@@ -100,7 +101,7 @@ type (
 	}
 )
 
-func (p Post) Validate(ctx *macaron.Context, errs Errors) Errors {
+func (p Post) Validate(ctx *emmanuel.Context, errs Errors) Errors {
 	if len(p.Title) < 10 {
 		errs = append(errs, Error{
 			FieldNames:     []string{"title"},
@@ -119,7 +120,7 @@ func (g Group) Model() string {
 	return g.Name
 }
 
-func (_ CustomErrorHandle) Error(_ *macaron.Context, _ Errors) {}
+func (_ CustomErrorHandle) Error(_ *emmanuel.Context, _ Errors) {}
 
 const (
 	testRoute       = "/test"

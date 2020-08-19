@@ -1,5 +1,6 @@
 // Copyright 2014 Martini Authors
 // Copyright 2014 The Macaron Authors
+// Copyright 2020 the Emmanuel developers
 //
 // Licensed under the Apache License, Version 2.0 (the "License"): you may
 // not use this file except in compliance with the License. You may obtain
@@ -13,7 +14,7 @@
 // License for the specific language governing permissions and limitations
 // under the License.
 
-// Package binding is a middleware that provides request data binding and validation for Macaron.
+// Package binding is a middleware that provides request data binding and validation for Emmanuel.
 package binding
 
 import (
@@ -29,11 +30,11 @@ import (
 	"strings"
 	"unicode/utf8"
 
+	"github.com/go-emmanuel/emmanuel"
 	"github.com/unknwon/com"
-	"gopkg.in/macaron.v1"
 )
 
-func bind(ctx *macaron.Context, obj interface{}, ifacePtr ...interface{}) {
+func bind(ctx *emmanuel.Context, obj interface{}, ifacePtr ...interface{}) {
 	contentType := ctx.Req.Header.Get("Content-Type")
 	if ctx.Req.Method == "POST" || ctx.Req.Method == "PUT" || ctx.Req.Method == "PATCH" || ctx.Req.Method == "DELETE" {
 		switch {
@@ -89,7 +90,7 @@ func errorHandler(errs Errors, rw http.ResponseWriter) {
 }
 
 // CustomErrorHandler will be invoked if errors occured.
-var CustomErrorHandler func(*macaron.Context, Errors)
+var CustomErrorHandler func(*emmanuel.Context, Errors)
 
 // Bind wraps up the functionality of the Form and Json middleware
 // according to the Content-Type and verb of the request.
@@ -99,8 +100,8 @@ var CustomErrorHandler func(*macaron.Context, Errors)
 // Form or Json middleware directly. An interface pointer can
 // be added as a second argument in order to map the struct to
 // a specific interface.
-func Bind(obj interface{}, ifacePtr ...interface{}) macaron.Handler {
-	return func(ctx *macaron.Context) {
+func Bind(obj interface{}, ifacePtr ...interface{}) emmanuel.Handler {
+	return func(ctx *emmanuel.Context) {
 		bind(ctx, obj, ifacePtr...)
 		if handler, ok := obj.(ErrorHandler); ok {
 			_, _ = ctx.Invoke(handler.Error)
@@ -115,8 +116,8 @@ func Bind(obj interface{}, ifacePtr ...interface{}) macaron.Handler {
 // BindIgnErr will do the exactly same thing as Bind but without any
 // error handling, which user has freedom to deal with them.
 // This allows user take advantages of validation.
-func BindIgnErr(obj interface{}, ifacePtr ...interface{}) macaron.Handler {
-	return func(ctx *macaron.Context) {
+func BindIgnErr(obj interface{}, ifacePtr ...interface{}) emmanuel.Handler {
+	return func(ctx *emmanuel.Context) {
 		bind(ctx, obj, ifacePtr...)
 	}
 }
@@ -130,8 +131,8 @@ func BindIgnErr(obj interface{}, ifacePtr ...interface{}) macaron.Handler {
 // keys, for example: key=val1&key=val2&key=val3
 // An interface pointer can be added as a second argument in order
 // to map the struct to a specific interface.
-func Form(formStruct interface{}, ifacePtr ...interface{}) macaron.Handler {
-	return func(ctx *macaron.Context) {
+func Form(formStruct interface{}, ifacePtr ...interface{}) emmanuel.Handler {
+	return func(ctx *emmanuel.Context) {
 		var errors Errors
 
 		ensureNotPointer(formStruct)
@@ -158,8 +159,8 @@ var MaxMemory = int64(1024 * 1024 * 10)
 // and handle file uploads. Like the other deserialization middleware handlers,
 // you can pass in an interface to make the interface available for injection
 // into other handlers later.
-func MultipartForm(formStruct interface{}, ifacePtr ...interface{}) macaron.Handler {
-	return func(ctx *macaron.Context) {
+func MultipartForm(formStruct interface{}, ifacePtr ...interface{}) emmanuel.Handler {
+	return func(ctx *emmanuel.Context) {
 		var errors Errors
 		ensureNotPointer(formStruct)
 		formStruct := reflect.New(reflect.TypeOf(formStruct))
@@ -195,8 +196,8 @@ func MultipartForm(formStruct interface{}, ifacePtr ...interface{}) macaron.Hand
 // validated, but no error handling is actually performed here.
 // An interface pointer can be added as a second argument in order
 // to map the struct to a specific interface.
-func Json(jsonStruct interface{}, ifacePtr ...interface{}) macaron.Handler {
-	return func(ctx *macaron.Context) {
+func Json(jsonStruct interface{}, ifacePtr ...interface{}) emmanuel.Handler {
+	return func(ctx *emmanuel.Context) {
 		var errors Errors
 		ensureNotPointer(jsonStruct)
 		jsonStruct := reflect.New(reflect.TypeOf(jsonStruct))
@@ -212,8 +213,8 @@ func Json(jsonStruct interface{}, ifacePtr ...interface{}) macaron.Handler {
 }
 
 // URL is the middleware to parse URL parameters into struct fields.
-func URL(obj interface{}, ifacePtr ...interface{}) macaron.Handler {
-	return func(ctx *macaron.Context) {
+func URL(obj interface{}, ifacePtr ...interface{}) emmanuel.Handler {
+	return func(ctx *emmanuel.Context) {
 		var errors Errors
 
 		ensureNotPointer(obj)
@@ -256,8 +257,8 @@ func RawValidate(obj interface{}) Errors {
 // passed in implements Validator, then the user-defined Validate method
 // is executed, and its errors are mapped to the context. This middleware
 // performs no error handling: it merely detects errors and maps them.
-func Validate(obj interface{}) macaron.Handler {
-	return func(ctx *macaron.Context) {
+func Validate(obj interface{}) emmanuel.Handler {
+	return func(ctx *emmanuel.Context) {
 		var errs Errors
 		v := reflect.ValueOf(obj)
 		k := v.Kind()
@@ -743,7 +744,7 @@ func ensureNotPointer(obj interface{}) {
 // Performs validation and combines errors from validation
 // with errors from deserialization, then maps both the
 // resulting struct and the errors to the context.
-func validateAndMap(obj reflect.Value, ctx *macaron.Context, errors Errors, ifacePtr ...interface{}) {
+func validateAndMap(obj reflect.Value, ctx *emmanuel.Context, errors Errors, ifacePtr ...interface{}) {
 	_, _ = ctx.Invoke(Validate(obj.Interface()))
 	errors = append(errors, getErrors(ctx)...)
 	ctx.Map(errors)
@@ -754,7 +755,7 @@ func validateAndMap(obj reflect.Value, ctx *macaron.Context, errors Errors, ifac
 }
 
 // getErrors simply gets the errors from the context (it's kind of a chore)
-func getErrors(ctx *macaron.Context) Errors {
+func getErrors(ctx *emmanuel.Context) Errors {
 	return ctx.GetVal(reflect.TypeOf(Errors{})).Interface().(Errors)
 }
 
@@ -762,7 +763,7 @@ type (
 	// ErrorHandler is the interface that has custom error handling process.
 	ErrorHandler interface {
 		// Error handles validation errors with custom process.
-		Error(*macaron.Context, Errors)
+		Error(*emmanuel.Context, Errors)
 	}
 
 	// Validator is the interface that handles some rudimentary
@@ -774,6 +775,6 @@ type (
 		// in your application. For example, you might verify that a credit
 		// card number matches a valid pattern, but you probably wouldn't
 		// perform an actual credit card authorization here.
-		Validate(*macaron.Context, Errors) Errors
+		Validate(*emmanuel.Context, Errors) Errors
 	}
 )

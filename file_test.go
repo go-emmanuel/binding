@@ -1,5 +1,6 @@
 // Copyright 2014 Martini Authors
 // Copyright 2014 The Macaron Authors
+// Copyright 2020 the Emmanuel developers
 //
 // Licensed under the Apache License, Version 2.0 (the "License"): you may
 // not use this file except in compliance with the License. You may obtain
@@ -22,8 +23,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/go-emmanuel/emmanuel"
 	. "github.com/smartystreets/goconvey/convey"
-	"gopkg.in/macaron.v1"
 )
 
 var fileTestCases = []fileTestCase{
@@ -76,7 +77,7 @@ func Test_FileUploads(t *testing.T) {
 
 func performFileTest(t *testing.T, binder handlerFunc, testCase fileTestCase) {
 	httpRecorder := httptest.NewRecorder()
-	m := macaron.Classic()
+	m := emmanuel.Classic()
 
 	fileTestHandler := func(actual BlogPost, errs Errors) {
 		assertFileAsExpected(t, testCase, actual.HeaderImage, testCase.singleFile)

@@ -21,8 +21,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/go-emmanuel/emmanuel"
 	. "github.com/smartystreets/goconvey/convey"
-	"gopkg.in/macaron.v1"
 )
 
 var validationTestCases = []validationTestCase{
@@ -382,7 +382,7 @@ func Test_Validation(t *testing.T) {
 
 func performValidationTest(t *testing.T, testCase validationTestCase) {
 	httpRecorder := httptest.NewRecorder()
-	m := macaron.Classic()
+	m := emmanuel.Classic()
 
 	m.Post(testRoute, Validate(testCase.data), func(actual Errors) {
 		So(fmt.Sprintf("%+v", actual), ShouldEqual, fmt.Sprintf("%+v", testCase.expectedErrors))

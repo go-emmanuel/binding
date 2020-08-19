@@ -1,5 +1,6 @@
 // Copyright 2014 Martini Authors
 // Copyright 2014 The Macaron Authors
+// Copyright 2020 the Emmanuel developers
 //
 // Licensed under the Apache License, Version 2.0 (the "License"): you may
 // not use this file except in compliance with the License. You may obtain
@@ -23,8 +24,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/go-emmanuel/emmanuel"
 	. "github.com/smartystreets/goconvey/convey"
-	"gopkg.in/macaron.v1"
 )
 
 var jsonTestCases = []jsonTestCase{
@@ -136,7 +137,7 @@ func Test_Json(t *testing.T) {
 func performJsonTest(t *testing.T, binder handlerFunc, testCase jsonTestCase) {
 	var payload io.Reader
 	httpRecorder := httptest.NewRecorder()
-	m := macaron.Classic()
+	m := emmanuel.Classic()
 
 	jsonTestHandler := func(actual interface{}, errs Errors) {
 		if testCase.shouldSucceedOnJson && len(errs) > 0 {

@@ -1,5 +1,6 @@
 // Copyright 2014 Martini Authors
 // Copyright 2014 The Macaron Authors
+// Copyright 2020 the Emmanuel developers
 //
 // Licensed under the Apache License, Version 2.0 (the "License"): you may
 // not use this file except in compliance with the License. You may obtain
@@ -22,8 +23,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/go-emmanuel/emmanuel"
 	. "github.com/smartystreets/goconvey/convey"
-	"gopkg.in/macaron.v1"
 )
 
 // When binding from Form data, testing the type of data to bind
@@ -58,7 +59,7 @@ func Test_SetWithProperType(t *testing.T) {
 
 		for key, testCase := range testInputs {
 			httpRecorder := httptest.NewRecorder()
-			m := macaron.Classic()
+			m := emmanuel.Classic()
 
 			m.Post(testRoute, Form(Everything{}), func(actual Everything, errs Errors) {
 				So(fmt.Sprintf("%+v", actual), ShouldEqual, fmt.Sprintf("%+v", expectedOutputs[key]))

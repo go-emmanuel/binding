@@ -1,5 +1,6 @@
 // Copyright 2014 Martini Authors
 // Copyright 2014 The Macaron Authors
+// Copyright 2020 the Emmanuel developers
 //
 // Licensed under the Apache License, Version 2.0 (the "License"): you may
 // not use this file except in compliance with the License. You may obtain
@@ -23,8 +24,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/go-emmanuel/emmanuel"
 	. "github.com/smartystreets/goconvey/convey"
-	"gopkg.in/macaron.v1"
 )
 
 var formTestCases = []formTestCase{
@@ -173,7 +174,7 @@ func Test_Form(t *testing.T) {
 
 func performFormTest(t *testing.T, binder handlerFunc, testCase formTestCase) {
 	resp := httptest.NewRecorder()
-	m := macaron.Classic()
+	m := emmanuel.Classic()
 
 	formTestHandler := func(actual interface{}, errs Errors) {
 		if testCase.shouldSucceed && len(errs) > 0 {
@@ -269,7 +270,7 @@ type defaultForm struct {
 
 func Test_Default(t *testing.T) {
 	Convey("Test default value", t, func() {
-		m := macaron.Classic()
+		m := emmanuel.Classic()
 		m.Get("/", Bind(defaultForm{}), func(f defaultForm) {
 			So(f.Default, ShouldEqual, "hello world")
 		})

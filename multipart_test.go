@@ -1,5 +1,6 @@
 // Copyright 2014 Martini Authors
 // Copyright 2014 The Macaron Authors
+// Copyright 2020 the Emmanuel developers
 //
 // Licensed under the Apache License, Version 2.0 (the "License"): you may
 // not use this file except in compliance with the License. You may obtain
@@ -24,8 +25,8 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/go-emmanuel/emmanuel"
 	. "github.com/smartystreets/goconvey/convey"
-	"gopkg.in/macaron.v1"
 )
 
 var multipartFormTestCases = []multipartFormTestCase{
@@ -82,7 +83,7 @@ func Test_MultipartForm(t *testing.T) {
 
 func performMultipartFormTest(t *testing.T, binder handlerFunc, testCase multipartFormTestCase) {
 	httpRecorder := httptest.NewRecorder()
-	m := macaron.Classic()
+	m := emmanuel.Classic()
 
 	m.Post(testRoute, binder(BlogPost{}), func(actual BlogPost, errs Errors) {
 		if testCase.shouldSucceed && len(errs) > 0 {
